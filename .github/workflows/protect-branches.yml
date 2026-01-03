@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Block direct push to main
         run: |
-          echo "❌ Il push diretto al main non è permesso. Usa una Pull Request da dev."
+          echo "Il push diretto al main non è permesso. Usa una Pull Request da dev."
           exit 1
 
   check-dev-commits:
@@ -32,7 +32,7 @@ jobs:
       - name: Block force push on dev
         run: |
           if [ "${{ github.event.forced }}" = "true" ]; then
-            echo "❌ Il push forzato su dev non è permesso!"
+            echo "Il push forzato su dev non è permesso!"
             exit 1
           fi
 
@@ -42,7 +42,7 @@ jobs:
           commit=$(git log --no-merges -1 --pretty=format:"%s")
           for commit in $commits; do
             if ! [[ "$commit" =~ AGGIUNTO|MODIFICATO|FIX|RIMOSSO|DEL ]]; then
-              echo "❌ Il messaggio '$commit' non contiene keyword valide (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
+              echo "Il messaggio '$commit' non contiene keyword valide (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
               exit 1
             fi
           done
