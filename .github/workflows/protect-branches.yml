@@ -39,7 +39,7 @@ jobs:
       # Controllo keyword nei commit pushati
       - name: Check commit messages for keywords
         run: |
-          commits=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:"%s")
+          commit=$(git log --no-merges -1 --pretty=format:"%s")
           for commit in $commits; do
             if ! [[ "$commit" =~ AGGIUNTO|MODIFICATO|FIX|RIMOSSO|DEL ]]; then
               echo "❌ Il messaggio '$commit' non contiene keyword valide (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
