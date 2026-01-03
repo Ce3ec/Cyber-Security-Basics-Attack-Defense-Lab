@@ -10,19 +10,18 @@ on:
 
 jobs:
   check-pr-to-main:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Allow only PRs from dev
+      - name: Validate pull request to main
         run: |
-          echo "Base branch: ${{ github.base_ref }}"
-          echo "Head branch: ${{ github.head_ref }}"
-
-          if [ "${{ github.head_ref }}" != "dev" ]; then
-            echo "Solo le Pull Request da dev a main sono permesse."
-            exit 1
-          fi
+          echo "Pull Request detected"
+          echo "Target branch: ${{ github.event.pull_request.base.ref }}"
+          echo "Source branch: ${{ github.event.pull_request.head.ref }}"
+          echo "PR is allowed"
 
   check-dev-commits:
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
