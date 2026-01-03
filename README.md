@@ -32,33 +32,33 @@ Leggi attentamente il file [DISCLAIMER.md](DISCLAIMER.md) prima di iniziare.
 ---
 
 ## Struttura del progetto
-
+```
 cyber-attack-defense-lab/
 │
 ├── README.md
 ├── DISCLAIMER.md
 │
 ├── theory/ # Concetti teorici
-│ ├── malware_basics.md
-│ ├── antivirus_basics.md
-│ └── detection_methods.md
+│   ├── malware_basics.md
+│   ├── antivirus_basics.md
+│   └── detection_methods.md
 │
 ├── lab_1_virus/ # Simulazione virus educativo
-│ ├── explanation.md
-│ ├── example_virus.py
-│ └── user_tasks.md
+│   ├── explanation.md
+│   ├── example_virus.py
+│   └── user_tasks.md
 │
 ├── lab_2_antivirus/ # Antivirus base
-│ ├── explanation.md
-│ ├── example_antivirus.py
-│ └── user_tasks.md
+│   ├── explanation.md
+│   ├── example_antivirus.py
+│   └── user_tasks.md
 │
 ├── sandbox/ # Ambiente di test
-│ └── test_environment/
+│   └── test_environment/
 │
 └── extras/
-└── improvements.md
-
+    └── improvements.md
+```
 ---
 
 ## LAB 1 – Virus educativo (simulato)
