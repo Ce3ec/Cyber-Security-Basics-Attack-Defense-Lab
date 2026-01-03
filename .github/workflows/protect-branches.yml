@@ -1,0 +1,53 @@
+name: Branch Protection
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  protect-main:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Blocca push diretto
+      - name: Block direct push to main
+        run: |
+          echo "Il push diretto al main non è permesso. Crea una Pull request."
+          exit 1
+
+      # Blocca force push su main
+      - name: Block force push on main
+        run: |
+          if [ "$GITHUB_EVENT_BEFORE" != "0000000000000000000000000000000000000000" ] && [ "$(git rev-list $GITHUB_EVENT_BEFORE..$GITHUB_SHA)" == "" ]; then
+            echo "Il push diretto al main non è permesso!"
+            exit 1
+          fi
+
+  check-dev-commits:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Blocca force push su dev
+      - name: Block force push on dev
+        run: |
+          if [ "$GITHUB_EVENT_BEFORE" != "0000000000000000000000000000000000000000" ] && [ "$(git rev-list $GITHUB_EVENT_BEFORE..$GITHUB_SHA)" == "" ]; then
+            echo "Il push forzato al main non è permesso!"
+            exit 1
+          fi
+
+      # Controllo commit per keyword
+      - name: Check commit messages for keywords
+        run: |
+          commits=$(git log origin/dev..HEAD --pretty=format:"%s")
+          for commit in $commits; do
+            if ! [[ "$commit" =~ AGGIUNTO|MODIFICATO|FIX|RIMOSSO|DEL ]]; then
+              echo "Il messaggio '$commit' non contiene nessuna keyword (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
+              exit 1
+            fi
+          done
