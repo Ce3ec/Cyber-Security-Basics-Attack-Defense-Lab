@@ -40,7 +40,7 @@ jobs:
           commit=$(git log --no-merges -1 --pretty=format:"%s")
           echo "Checking commit: $commit"
 
-          if ! echo "$commit" | grep -Ei "(AGGIUNTO|MODIFICATO|FIX|RIMOSSO|DEL)"; then
+          if ! echo "$commit" | grep -Ei "(ADD|UPDATE|FIX|DEL|TEST)"; then
             echo "Il messaggio '$commit' non contiene keyword valide (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
             exit 1
           fi
