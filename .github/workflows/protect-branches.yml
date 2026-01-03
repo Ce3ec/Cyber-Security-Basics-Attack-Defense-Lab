@@ -3,32 +3,32 @@ name: Branch Protection
 on:
   push:
     branches:
-      - main
       - dev
   pull_request:
     branches:
       - main
 
 jobs:
-  protect-main:
-    # Blocca SOLO push diretti, NON le PR
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  check-pr-to-main:
     runs-on: ubuntu-latest
     steps:
-      - name: Block direct push to main
+      - name: Allow only PRs from dev
         run: |
-          echo "Il push diretto al main non è permesso. Usa una Pull Request da dev."
-          exit 1
+          echo "Base branch: ${{ github.base_ref }}"
+          echo "Head branch: ${{ github.head_ref }}"
+
+          if [ "${{ github.head_ref }}" != "dev" ]; then
+            echo "Solo le Pull Request da dev a main sono permesse."
+            exit 1
+          fi
 
   check-dev-commits:
-    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # Blocca force push su dev
       - name: Block force push on dev
         run: |
           if [ "${{ github.event.forced }}" = "true" ]; then
@@ -36,13 +36,12 @@ jobs:
             exit 1
           fi
 
-      # Controllo keyword nei commit pushati
       - name: Check commit messages for keywords
         run: |
           commit=$(git log --no-merges -1 --pretty=format:"%s")
-          for commit in $commits; do
-            if ! [[ "$commit" =~ AGGIUNTO|MODIFICATO|FIX|RIMOSSO|DEL ]]; then
-              echo "Il messaggio '$commit' non contiene keyword valide (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
-              exit 1
-            fi
-          done
+          echo "Checking commit: $commit"
+
+          if ! echo "$commit" | grep -Ei "(AGGIUNTO|MODIFICATO|FIX|RIMOSSO|DEL)"; then
+            echo "Il messaggio '$commit' non contiene keyword valide (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
+            exit 1
+          fi
