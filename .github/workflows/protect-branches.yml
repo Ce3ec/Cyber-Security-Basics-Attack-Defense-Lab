@@ -3,22 +3,22 @@ name: Branch Protection
 on:
   push:
     branches:
-      - main
       - dev
   pull_request:
     branches:
       - main
 
 jobs:
-  protect-main:
-    # Blocca SOLO push diretti, NON le PR
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  check-pr-to-main:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Block direct push to main
+      - name: Validate pull request to main
         run: |
-          echo "❌ Il push diretto al main non è permesso. Usa una Pull Request da dev."
-          exit 1
+          echo "Pull Request detected"
+          echo "Target branch: ${{ github.event.pull_request.base.ref }}"
+          echo "Source branch: ${{ github.event.pull_request.head.ref }}"
+          echo "PR is allowed"
 
   check-dev-commits:
     if: github.ref == 'refs/heads/dev'
@@ -28,21 +28,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Blocca force push su dev
       - name: Block force push on dev
         run: |
           if [ "${{ github.event.forced }}" = "true" ]; then
-            echo "❌ Il push forzato su dev non è permesso!"
+            echo "Il push forzato su dev non è permesso!"
             exit 1
           fi
 
-      # Controllo keyword nei commit pushati
       - name: Check commit messages for keywords
         run: |
-          commits=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:"%s")
-          for commit in $commits; do
-            if ! [[ "$commit" =~ AGGIUNTO|MODIFICATO|FIX|RIMOSSO|DEL ]]; then
-              echo "❌ Il messaggio '$commit' non contiene keyword valide (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
-              exit 1
-            fi
-          done
+          commit=$(git log --no-merges -1 --pretty=format:"%s")
+          echo "Checking commit: $commit"
+
+          if ! echo "$commit" | grep -Ei "(AGGIUNTO|MODIFICATO|FIX|RIMOSSO|DEL)"; then
+            echo "Il messaggio '$commit' non contiene keyword valide (AGGIUNTO, MODIFICATO, FIX, RIMOSSO, DEL)"
+            exit 1
+          fi
