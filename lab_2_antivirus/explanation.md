@@ -50,7 +50,7 @@ Quando un file viene identificato come malevolo (ovvero il suo hash coincide con
 | :--- | :--- |
 | **Linguaggio** | Python 3.x |
 | **Algoritmo Hash** | SHA-256 |
-| **Librerie Core** | `os`, `hashlib`, `shutil`, `time` |
+| **Librerie** | `os`, `hashlib`, `shutil`, `time` |
 | **Metodo di Analisi** | Signature-based Detection |
 | **Compatibilità** | Cross-platform (Windows, macOS, Linux) |
 
@@ -68,3 +68,4 @@ Quando un file viene identificato come malevolo (ovvero il suo hash coincide con
 # 🧷 Strumento: Calcolo Hash SHA256
 
 Lo script batch 'hash.bat' per Windows permette di calcolare rapidamente l'impronta digitale (**hash**) di un file utilizzando l'algoritmo **SHA256**. È estremamente utile per verificare l'integrità dei file scaricati e assicurarsi che non siano stati alterati.
+
