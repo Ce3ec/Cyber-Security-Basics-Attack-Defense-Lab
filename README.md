@@ -35,29 +35,30 @@ Leggi attentamente il file [DISCLAIMER.md](DISCLAIMER.md) prima di iniziare.
 ```
 cyber-attack-defense-lab/
 │
-├── README.md
-├── DISCLAIMER.md
+├── lab_1_virus/ # Simulazione virus educativo
+│   ├── example_virus.py
+│   ├── explanation.md
+│   └── user_tasks.md
+│
+├── lab_2_antivirus/ # Antivirus base
+│   ├── example_antivirus.py
+│   ├── explanation.md
+│   ├── hash.bat
+│   └── user_tasks.md
+│
+├── sandbox/ # Ambiente di test
+│   └── test_environment/
 │
 ├── theory/ # Concetti teorici
 │   ├── malware_basics.md
 │   ├── antivirus_basics.md
 │   └── detection_methods.md
 │
-├── lab_1_virus/ # Simulazione virus educativo
-│   ├── explanation.md
-│   ├── example_virus.py
-│   └── user_tasks.md
-│
-├── lab_2_antivirus/ # Antivirus base
-│   ├── explanation.md
-│   ├── example_antivirus.py
-│   └── user_tasks.md
-│
-├── sandbox/ # Ambiente di test
-│   └── test_environment/
-│
 └── extras/
-    └── improvements.md
+│   └── improvements.md
+│
+├── README.md
+├── DISCLAIMER.md
 ```
 ---
 
