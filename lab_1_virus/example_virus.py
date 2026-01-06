@@ -3,24 +3,32 @@ import random as rand
 import platform
 import subprocess
 import sys
+from pathlib import Path
 
-# TODO: se i file sono già presenti la creazione da errore, creare sia un fallback e un check
-# TODO: loggare le path di tutti i malware creati in virus.log
 # TODO: creare una funzione che prende le path da virus.log ed elimina quei file (se li trova)
 
+# Percorsi
 PERCORSO_DELLA_CARTELLA = './sandbox/test_environment' # Il "malware" non uscira da questa cartella, consigliamo di NON cambiarla.
+LOG_PATH = './lab_1_virus/virus.log'
 
+# Costanti
 NUMERO_DELLE_COPIE = 1 # Questo è il numero di copie che farà il "malware", STATE MOLTO ATTENTI A QUANTE NE METTETE, soprattuto se lo eseguite nel vostro sistema.
 
 HIDDEN = False
-RANDOM_HIDE = False
+RANDOM_HIDE = True
+
+# Attributi
 ATTRIBUTO_NASCOSTO = 0x02
+
+# TODO: spostarle in un loro file
+
+# Funzioni di supporto
 
 def nascondi_malware(percorso_file)->None:
     '''
     Nasconde i file dal gestore file
     
-    :param percorso_file: il percorso specifico del "malware"
+    :param percorso_file: Il percorso specifico del "malware"
     '''
 
     sistema = platform.system()
@@ -45,14 +53,23 @@ def lista_cartelle()->list:
 
     return cartelle
 
-def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False)->str:
+# ---
+
+# TODO: spostarle in un loro file
+# Funzioni malware
+
+def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False, estensione:str='.txt')->None:
     '''
     Docstring for crea_malware
     
-    :param nome_malware: il nome che avrà il file "malware"
+    :param nome_malware: Il nome che avrà il file "malware"
     :type nome_malware: str
-    :param messaggio: il testo all'interno del file "malware"
+    :param messaggio: Il testo all'interno del file "malware"
     :type messaggio: str
+    :param hide: Se True il malware sarà invisibile al gestore file (se non è attivata l'opzione elementi nascosti)
+    :type hide: bool
+    :param estensione: L'estensione del file
+    :type estensione: str
     '''
 
     cartelle = lista_cartelle()
@@ -60,17 +77,33 @@ def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False)->str:
     print(len(cartelle))
 
     if not cartelle:
-        percorso_completo = os.path.join(PERCORSO_DELLA_CARTELLA, nome_malware) + '.txt'
+        base_percorso = os.path.join(PERCORSO_DELLA_CARTELLA, nome_malware)
     else:
-        percorso_completo = os.path.join(rand.choice(cartelle), nome_malware) + '.txt'
+        base_percorso = os.path.join(rand.choice(cartelle), nome_malware)
 
+    percorso_completo = Path(f"{base_percorso}{estensione}")
+
+    i = 0
+    while percorso_completo.exists():
+        percorso_completo = Path(f"{base_percorso}_{i}{estensione}")
+        i += 1
+
+    print(percorso_completo)
     with open(percorso_completo, "w", encoding="utf-8") as file:
         file.write(messaggio)
+
+    with open(LOG_PATH, "a") as f:
+            f.write(str(percorso_completo)+'\n')
 
     if hide:
         nascondi_malware(percorso_completo)
 
-    return percorso_completo
+def rimuovi_malware():
+    pass
+
+# ---
+
+# Funzioni comportamento malware
 
 # TODO: da migliorare, la struttura è fragile e l'esecuzione a runtime può rompersi, in oltre generare un .exe in runtime è lento e creerebbe cartelle aggiuntive con le risorse
 def trojan(hidden:bool=False, hide_children:bool=False)->None:
@@ -92,8 +125,7 @@ for x in range({NUMERO_DELLE_COPIE}):
     crea_malware(f"malware_{{x}}")
 """
 
-    with open(f"{random_name}.py", "w") as f:
-        f.write(code)
+    crea_malware(random_name, code, estensione='.py')
 
     subprocess.run([
         sys.executable, "-m", "PyInstaller",
@@ -109,10 +141,7 @@ def spyware(hidden:bool=False)->None:
     :type hidden: bool
     '''
     
-    percorso_completo = crea_malware('Spyware', 'Ti sto spiando 👀', hidden)
-
-    with open("./virus.log", "a") as f:
-            f.write(percorso_completo)
+    crea_malware('Spyware', 'Ti sto spiando 👀', hidden)
 
 def rootkit(hidden:bool=True, hide_children:bool=True)->None:
     '''
@@ -124,38 +153,50 @@ def rootkit(hidden:bool=True, hide_children:bool=True)->None:
     :type hide_children: bool
     '''
 
-    percorso_completo = crea_malware('RootKit', 'Shhhhh non fatevi sentire...', hidden)
+    crea_malware('RootKit', 'Shhhhh non fatevi sentire...', hidden)
 
-    with open("./virus.log", "a") as f:
-            f.write(percorso_completo)
+    for _ in range(NUMERO_DELLE_COPIE):
+        if hide_children:
+            if rand.randrange(0,10) > 5:
+                crea_malware(f'Virus', 'Shhhhh...', hide_children)
+                continue
 
-    for x in range(NUMERO_DELLE_COPIE):
-        percorso_completo = crea_malware(f'Virus_{x}', 'Shhhhh...', hide_children)
-
-        with open("./virus.log", "a") as f:
-            f.write(percorso_completo)
+        crea_malware(f'Virus', 'Shhhhh...')
 
 def main()->None:
 
-    funzioni = [trojan, spyware, rootkit]
+    funzioni = [
+            lambda: trojan(HIDDEN, RANDOM_HIDE), 
+            lambda: spyware(HIDDEN), 
+            lambda: rootkit(True, RANDOM_HIDE)
+            ]
 
     while True:
         print('Inserisci la tipologia di "malware" che vuoi creare:')
         print('1. Trojang')
         print('2. Spyware')
         print('3. RootKit')
-        print('4. Esci')
+        print('4. Distruggi tutti i "malware" (da fare)') #TODO: da fare
+        print('5. Esci')
         print('\n')
         x = input(">")
 
         try:
             x = int(x)
 
+            if x>5 or x<=0:
+                print("Errore: Inserire un valore fra 1 e 4")
+                continue
+
             if x == 4:
+                rimuovi_malware()
                 exit(0)
 
-            elif x>4:
-                print("Errore: Inserire un valore fra 1 e 4")
+            elif x == 5:
+                exit(0)
+
+            else:
+                print("Errore: Non so cosa hai inserito ma non farlo più")
                 continue
 
             break
@@ -165,16 +206,13 @@ def main()->None:
     
     malware = funzioni[x-1]
 
-    # TODO: modificare la logica che usano le funzioni per nascondere i file
-    if RANDOM_HIDE:
-        malware(RANDOM_HIDE)
-    else:
-        malware() #HIDDEN
+    malware()
 
 if __name__ == '__main__':
 
-    with open("./virus.log", "w") as f:
-        f.write("")
+    if not os.path.exists(LOG_PATH):
+        with open(LOG_PATH, "w") as f:
+            f.write("Questo file tiene traccia dei percorsi dei virus che hai generato in qualsiasi contesto (in caso non li riuscissi a trovare)\n")
     
     os.makedirs(PERCORSO_DELLA_CARTELLA, exist_ok=True)
 
