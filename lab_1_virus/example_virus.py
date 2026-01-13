@@ -119,13 +119,90 @@ def trojan(hidden:bool=False, hide_children:bool=False)->None:
     random_name = rand.choice(names)
 
     code = f"""
-from your_module import crea_malware
+import os
+import random as rand
+from pathlib import Path
+import platform
+import subprocess
+
+PERCORSO_DELLA_CARTELLA = './sandbox/test_environment'
+LOG_PATH = './lab_1_virus/virus.log'
+
+def nascondi_malware(percorso_file)->None:
+    '''
+    Nasconde i file dal gestore file
+    
+    :param percorso_file: Il percorso specifico del "malware"
+    '''
+
+    sistema = platform.system()
+
+    if sistema == "Windows":
+        subprocess.run(["attrib", "+h", percorso_file], shell=True)
+    else:
+        directory, nome = os.path.split(percorso_file)
+
+        if not nome.startswith("."):
+            os.rename(percorso_file, os.path.join(directory, "." + nome))
+
+def lista_cartelle()->list:
+    '''
+    Ritorna la lista di tutte le cartelle all'interno di sandbox/test_environment
+    '''
+    cartelle = []
+
+    for root, dirs, _ in os.walk(PERCORSO_DELLA_CARTELLA):
+        for d in dirs:
+            cartelle.append(os.path.join(root, d))
+
+    return cartelle
+
+def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False, estensione:str='.txt')->None:
+    '''
+    Docstring for crea_malware
+    
+    :param nome_malware: Il nome che avrà il file "malware"
+    :type nome_malware: str
+    :param messaggio: Il testo all'interno del file "malware"
+    :type messaggio: str
+    :param hide: Se True il malware sarà invisibile al gestore file (se non è attivata l'opzione elementi nascosti)
+    :type hide: bool
+    :param estensione: L'estensione del file
+    :type estensione: str
+    '''
+
+    cartelle = lista_cartelle()
+    print(cartelle)
+    print(len(cartelle))
+
+    if not cartelle:
+        base_percorso = os.path.join(PERCORSO_DELLA_CARTELLA, nome_malware)
+    else:
+        base_percorso = os.path.join(rand.choice(cartelle), nome_malware)
+
+    percorso_completo = Path(f"{{base_percorso}}{{estensione}}")
+
+    i = 0
+    while percorso_completo.exists():
+        percorso_completo = Path(f"{{base_percorso}}_{{i}}{{estensione}}")
+        i += 1
+
+    print(percorso_completo)
+    with open(percorso_completo, "w", encoding="utf-8") as file:
+        file.write(messaggio)
+
+    with open(LOG_PATH, "a") as f:
+            f.write(str(percorso_completo)+'\\n')
+
+    if hide:
+        nascondi_malware(percorso_completo)
+
 
 for x in range({NUMERO_DELLE_COPIE}):
-    crea_malware(f"malware_{{x}}")
+    crea_malware("Virus", "Grazie per avermi fatto entrare {{random_name}} :)", {hide_children})
 """
 
-    crea_malware(random_name, code, estensione='.py')
+    crea_malware(random_name, code, hidden, estensione='.py')
 
     subprocess.run([
         sys.executable, "-m", "PyInstaller",
@@ -196,17 +273,17 @@ def main()->None:
                 exit(0)
 
             else:
-                print("Errore: Non so cosa hai inserito ma non farlo più")
+                malware = funzioni[x-1]
+                malware()
                 continue
 
             break
 
         except:
+            os.system('cls')
             print("Errore: Inserire un valore valido")
     
-    malware = funzioni[x-1]
-
-    malware()
+    
 
 if __name__ == '__main__':
 
