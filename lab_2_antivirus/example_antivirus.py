@@ -20,7 +20,7 @@ def calculate_sha256(file_path):
 def main():
 
     # Hash malevolo fornito (corrisponde al file example_virus.py della repository)
-    MALICIOUS_HASH = "8eb712c9fd1b256bbc4b3b20d8bbcf0c6c6a5dab229a0e8e948744478b87e04b"
+    MALICIOUS_HASH = "f2139741036927659321599a111931aa53b015f684980e57bd328b96fea00817"
     
     # Nome del file di script corrente per non auto-scansionarsi
     current_script = os.path.basename(__file__)
@@ -99,3 +99,4 @@ if __name__ == "__main__":
     if sys.platform.startswith('win'):
         print("\nPremi INVIO per uscire...")
         input()
+
