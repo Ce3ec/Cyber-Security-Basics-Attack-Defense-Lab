@@ -13,14 +13,14 @@ Benvenuti nella documentazione tecnica del **example-antivirus**. Questo script 
 
 ---
 
-## 🔍 Panoramica
+## Panoramica
 Il software opera come un **motore di scansione basato su hash**. Invece di analizzare il comportamento di un file (analisi dinamica), ne calcola l'impronta digitale univoca e la confronta con un database di firme note (analisi statica, in questo caso, il nostro database è una semplice stringa).
 
 
 
 ---
 
-## 🏗️ Architettura del Software
+## Architettura del Software
 
 ### 1. Calcolo dell'Hash (SHA-256)
 La funzione `calculate_sha256` utilizza la libreria standard `hashlib` per generare una stringa esadecimale di 64 caratteri.
@@ -34,7 +34,7 @@ Per ottimizzare le prestazioni ed evitare errori, lo script implementa tre filtr
 
 ---
 
-## ☣️ Logica di Quarantena
+## Logica di Quarantena
 Quando un file viene identificato come malevolo (ovvero il suo hash coincide con `MALICIOUS_HASH`), viene attivata la procedura di isolamento:
 
 1. **Creazione Ambiente**: Viene verificata l'esistenza della cartella `quarantine/`. Se assente, viene creata automaticamente.
@@ -56,7 +56,7 @@ Quando un file viene identificato come malevolo (ovvero il suo hash coincide con
 
 ---
 
-## 🚀 Come Eseguirlo
+## Come Eseguirlo
 1. Assicurati di avere Python installato.
 2. Posiziona lo script nella cartella che desideri scansionare.
 3. Esegui il comando:
@@ -65,7 +65,6 @@ Quando un file viene identificato come malevolo (ovvero il suo hash coincide con
 
 ---
 
-# 🧷 Strumento: Calcolo Hash SHA256
+# Strumento: Calcolo Hash SHA256
 
 Lo script batch 'hash.bat' per Windows permette di calcolare rapidamente l'impronta digitale (**hash**) di un file utilizzando l'algoritmo **SHA256**. È estremamente utile per verificare l'integrità dei file scaricati e assicurarsi che non siano stati alterati.
-

