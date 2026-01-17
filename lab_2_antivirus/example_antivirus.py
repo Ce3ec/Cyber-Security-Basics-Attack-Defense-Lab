@@ -4,9 +4,6 @@ import shutil
 import sys
 import time
 
-# TODO: creare le costanti per l'ambiente (cartelle ecc)
-# TODO: fare un ciclo che va su tutta la cartella
-
 PERCORSO_DELLA_CARTELLA = './sandbox/test_environment' 
 CARTELLA_DI_QUARANTENA = "quarantine"
 # Hash malevolo fornito (corrisponde al file example_virus.py della repository)
