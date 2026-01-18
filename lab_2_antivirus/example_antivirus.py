@@ -13,6 +13,7 @@ def lista_files()->list:
     '''
     Ritorna la lista di tutti i files all'interno di sandbox/test_environment
     '''
+
     files = []
 
     for root, _, filenames in os.walk(PERCORSO_DELLA_CARTELLA):
@@ -22,7 +23,13 @@ def lista_files()->list:
     return files
 
 def calculate_sha256(file_path:str):
-    """Calcola l'hash SHA256 di un file"""
+    """
+    Calcola l'hash SHA256 di un file
+    
+    :param file_path: il percorso del file
+    :type file_path: str
+    """
+
     sha256_hash = hashlib.sha256()
     try:
         with open(file_path, "rb") as f:
@@ -35,6 +42,16 @@ def calculate_sha256(file_path:str):
         return None
 
 def antivirus_scan(files:list[str], current_script:str, quarantine_dir:str):
+    """
+    Calcola l'hash SHA256 di un file
+    
+    :param files: il percorso del file.
+    :type files: lis[str]
+    :param current_script: il percorso di questo script.
+    :type current_script: str
+    :param quarantine_dir: il percorso della cartella di quarantena.
+    :type quarantine_dir: str
+    """
 
     if len(files) == 0:
         print("Nella cartella non ci sono files")

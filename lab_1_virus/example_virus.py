@@ -1,9 +1,10 @@
 import os
 import random as rand
-import platform
 import subprocess
 import sys
+
 from pathlib import Path
+from helpers import lista_cartelle, nascondi_malware, codice_dentro, rimuovi_malware
 
 # TODO: creare una funzione che prende le path da virus.log ed elimina quei file (se li trova)
 
@@ -20,47 +21,10 @@ RANDOM_HIDE = True
 # Attributi
 ATTRIBUTO_NASCOSTO = 0x02
 
-# TODO: spostarle in un loro file
-
-# Funzioni di supporto
-
-def nascondi_malware(percorso_file)->None:
-    '''
-    Nasconde i file dal gestore file
-    
-    :param percorso_file: Il percorso specifico del "malware"
-    '''
-
-    sistema = platform.system()
-
-    if sistema == "Windows":
-        subprocess.run(["attrib", "+h", percorso_file], shell=True)
-    else:
-        directory, nome = os.path.split(percorso_file)
-
-        if not nome.startswith("."):
-            os.rename(percorso_file, os.path.join(directory, "." + nome))
-
-def lista_cartelle()->list:
-    '''
-    Ritorna la lista di tutte le cartelle all'interno di sandbox/test_environment
-    '''
-    cartelle = []
-
-    for root, dirs, _ in os.walk(PERCORSO_DELLA_CARTELLA):
-        for d in dirs:
-            cartelle.append(os.path.join(root, d))
-
-    return cartelle
-
-# ---
-
-# TODO: spostarle in un loro file
 # Funzioni malware
-
 def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False, estensione:str='.txt')->None:
     '''
-    Docstring for crea_malware
+    Questa funzione crea un file con un'estensione e un contenuto con la possibilità di nasconderlo dall'esplora file per simulare tecniche di camuffamento o di elusione avanzate
     
     :param nome_malware: Il nome che avrà il file "malware"
     :type nome_malware: str
@@ -72,7 +36,7 @@ def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False, estensione
     :type estensione: str
     '''
 
-    cartelle = lista_cartelle()
+    cartelle = lista_cartelle(PERCORSO_DELLA_CARTELLA)
     print(cartelle)
     print(len(cartelle))
 
@@ -98,9 +62,6 @@ def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False, estensione
     if hide:
         nascondi_malware(percorso_completo)
 
-def rimuovi_malware():
-    pass
-
 # ---
 
 # Funzioni comportamento malware
@@ -119,89 +80,7 @@ def trojan(hidden:bool=False, hide_children:bool=False)->None:
     random_name = rand.choice(names)
 
     # Questo è il codice che verrà passato ai "malware" generati 
-    code = f"""
-import os
-import random as rand
-from pathlib import Path
-import platform
-import subprocess
-
-PERCORSO_DELLA_CARTELLA = './sandbox/test_environment'
-LOG_PATH = './lab_1_virus/virus.log'
-
-def nascondi_malware(percorso_file)->None:
-    '''
-    Nasconde i file dal gestore file
-    
-    :param percorso_file: Il percorso specifico del "malware"
-    '''
-
-    sistema = platform.system()
-
-    if sistema == "Windows":
-        subprocess.run(["attrib", "+h", percorso_file], shell=True)
-    else:
-        directory, nome = os.path.split(percorso_file)
-
-        if not nome.startswith("."):
-            os.rename(percorso_file, os.path.join(directory, "." + nome))
-
-def lista_cartelle()->list:
-    '''
-    Ritorna la lista di tutte le cartelle all'interno di sandbox/test_environment
-    '''
-    cartelle = []
-
-    for root, dirs, _ in os.walk(PERCORSO_DELLA_CARTELLA):
-        for d in dirs:
-            cartelle.append(os.path.join(root, d))
-
-    return cartelle
-
-def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False, estensione:str='.txt')->None:
-    '''
-    Docstring for crea_malware
-    
-    :param nome_malware: Il nome che avrà il file "malware"
-    :type nome_malware: str
-    :param messaggio: Il testo all'interno del file "malware"
-    :type messaggio: str
-    :param hide: Se True il malware sarà invisibile al gestore file (se non è attivata l'opzione elementi nascosti)
-    :type hide: bool
-    :param estensione: L'estensione del file
-    :type estensione: str
-    '''
-
-    cartelle = lista_cartelle()
-    print(cartelle)
-    print(len(cartelle))
-
-    if not cartelle:
-        base_percorso = os.path.join(PERCORSO_DELLA_CARTELLA, nome_malware)
-    else:
-        base_percorso = os.path.join(rand.choice(cartelle), nome_malware)
-
-    percorso_completo = Path(f"{{base_percorso}}{{estensione}}")
-
-    i = 0
-    while percorso_completo.exists():
-        percorso_completo = Path(f"{{base_percorso}}_{{i}}{{estensione}}")
-        i += 1
-
-    print(percorso_completo)
-    with open(percorso_completo, "w", encoding="utf-8") as file:
-        file.write(messaggio)
-
-    with open(LOG_PATH, "a") as f:
-            f.write(str(percorso_completo)+'\\n')
-
-    if hide:
-        nascondi_malware(percorso_completo)
-
-
-for x in range({NUMERO_DELLE_COPIE}):
-    crea_malware("Virus", "Grazie per avermi fatto entrare {{random_name}} :)", {hide_children})
-"""
+    code = codice_dentro(NUMERO_DELLE_COPIE, hide_children)
 
     crea_malware(random_name, code, hidden, estensione='.py')
 
@@ -254,7 +133,7 @@ def main()->None:
         print('1. Trojang')
         print('2. Spyware')
         print('3. RootKit')
-        print('4. Distruggi tutti i "malware" (da fare)') #TODO: da fare
+        print('4. Distruggi tutti i "malware"')
         print('5. Esci')
         print('\n')
         x = input(">")
@@ -263,17 +142,20 @@ def main()->None:
             x = int(x)
 
             if x>5 or x<=0:
+                os.system('cls')
                 print("Errore: Inserire un valore fra 1 e 4")
                 continue
 
             if x == 4:
-                rimuovi_malware()
-                exit(0)
+                os.system('cls')
+                rimuovi_malware(LOG_PATH)
+                continue
 
             elif x == 5:
                 exit(0)
 
             else:
+                os.system('cls')
                 malware = funzioni[x-1]
                 malware()
                 continue
