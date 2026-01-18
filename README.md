@@ -1,3 +1,7 @@
+# ⚠️ Eng. DISCLAIMER & EDUCATIONAL USE ⚠️
+This project is **for educational purposes only**. Please read the [full DISCLAIMER](DISCLAIMER.md) before using the code.
+---
+
 # Cyber Security Basics – Attack & Defense Lab 🛡
 
 Questo progetto è un **laboratorio di cyber security** pensato per introdurre **le basi di malware e antivirus** attraverso la **pratica guidata**.
