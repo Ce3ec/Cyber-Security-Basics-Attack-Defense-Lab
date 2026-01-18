@@ -6,7 +6,8 @@ import time
 
 PERCORSO_DELLA_CARTELLA = './sandbox/test_environment' 
 CARTELLA_DI_QUARANTENA = "quarantine"
-# Hash malevolo fornito (corrisponde al file example_virus.py della repository)
+
+# Hash malevolo fornito (corrisponde al file spyware.py generato da example_virus.py)
 MALICIOUS_HASH = "1296c5120af205deb94461a82bd75fd8cc9a014c52bb13deb2d0135d07829ea7"
 
 def lista_files()->list:
