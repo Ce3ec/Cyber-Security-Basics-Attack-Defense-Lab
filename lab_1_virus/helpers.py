@@ -2,7 +2,13 @@ import os
 import platform
 import subprocess
 
-from send2trash import send2trash
+try:
+    from send2trash import send2trash
+except ImportError:
+    raise ImportError(
+        "Libreria 'send2trash' non trovata. "
+        "Installa le dipendenze con: pip install -r requirements.txt"
+    )
 
 def codice_dentro(numero_delle_copie:int=1, hide_children:bool=False):
     '''
