@@ -6,8 +6,6 @@ import sys
 from pathlib import Path
 from helpers import lista_cartelle, nascondi_malware, codice_dentro, rimuovi_malware
 
-# TODO: creare una funzione che prende le path da virus.log ed elimina quei file (se li trova)
-
 # Percorsi
 PERCORSO_DELLA_CARTELLA = './sandbox/test_environment' # Il "malware" non uscira da questa cartella, consigliamo di NON cambiarla.
 LOG_PATH = './lab_1_virus/virus.log'
@@ -66,7 +64,6 @@ def crea_malware(nome_malware:str, messaggio:str='', hide:bool=False, estensione
 
 # Funzioni comportamento malware
 
-# TODO: da migliorare, la struttura è fragile e l'esecuzione a runtime può rompersi, in oltre generare un .exe in runtime è lento e creerebbe cartelle aggiuntive con le risorse
 def trojan(hidden:bool=False, hide_children:bool=False)->None:
     '''
     Crea un file 'infetto' che all'apertura genera NUMERO_DELLE_COPIE "malware"
