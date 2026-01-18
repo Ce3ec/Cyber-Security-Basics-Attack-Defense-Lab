@@ -41,6 +41,8 @@ jobs:
           echo "Checking commit: $commit"
 
           if ! echo "$commit" | grep -Ei "(ADD|UPDATE|FIX|DEL|TEST)"; then
+
             echo "Il messaggio '$commit' non contiene keyword valide (ADD, UPDATE, FIX, TEST, DEL)"
+
             exit 1
           fi
